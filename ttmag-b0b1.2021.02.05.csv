@@ -1,0 +1,96 @@
+NODENAME   ,MKK_NAME ,LINENAME ,BEREICH,KREISNUM,MAGTYPE,MUTTER,LOCATION ,DEVTYPE    ,SUBTYPE,NODEDCF       ,SECTION,INTERFACETYPE,IFACEID,LINENUM,NODEID,SUBADDR,DCCT,MINDIG,MAXDIG,HWL ,STAT,DYN,RATE,CYCLE    ,ZF,CLASS  ,SERVER
+#                                                     
+#-------------------------------------------------------------------------------------------------------------------------
+# Karol/Walla, 19.12.2018: due to mirtation from PC104 to Janz-box based system names of FECs, CAN lines etc. have been renamed.
+# This file contains data of former lines I (now B0) and J (now B1).
+# CAN lines: former TTFCANI is now TTFCANB0, TTFCANJ is now TTFCANB1 
+# (see e-mail from Carola, 19.12.2018, 10:28am)
+# The FEC name is now TTFMAG-B0-B1 (former TTMAG-IJ), the servers are called now ttmag-b0b1 and grpttmag-b0b1
+#----------------------------------------end of migration note------------------------------------------------------------
+#
+# NOTE: column SECTION                                
+#                                                     
+# 0 -> no section specified                           
+#                                                     
+# Otherwise we have the following bit position:       
+#                                                     
+# 1 -> common section                                 
+# 2 -> FLASH 1                                        
+# 4 -> FLASH 2                                        
+# 8 -> FLASHForward                                   
+#                                                     
+# Configuration for CAN Line B0 (former I), Socket CAN interface (type = 5) line socket can0, (can device 0)
+#                                                     
+CRATE15    ,NONE     ,TTFCANB0 ,TTF2   ,0,NONE    ,NONE  ,Anbau 2  ,CANSEDCRATE,NONE   ,can_sed-flash.eds    ,0     ,5           ,0       ,27,3,0  ,0  ,0    ,0   ,0   ,0,0 ,0   ,NONE            ,0   ,NONE   ,TTMAG-B0B1
+CRATE16    ,NONE     ,TTFCANB0 ,TTF2   ,0,NONE    ,NONE  ,Anbau 2  ,CANSEDCRATE,NONE   ,can_sed-flash.eds    ,0     ,5           ,0       ,27,2,0  ,0  ,0    ,0   ,0   ,0,0 ,0   ,NONE            ,0   ,NONE   ,TTMAG-B0B1
+CRATE17    ,NONE     ,TTFCANB0 ,TTF2   ,0,NONE    ,NONE  ,Anbau 2  ,CANSEDCRATE,NONE   ,can_sed-flash.eds    ,0     ,5           ,0       ,27,1,0  ,0  ,0    ,0   ,0   ,0,0 ,0   ,NONE            ,0   ,NONE   ,TTMAG-B0B1
+#                                                     
+H7DUMP     ,COPC-1   ,TTFCANB0 ,TTF2   ,32485,CV      ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,1,80 ,3.5,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+D11SMATCH  ,COPC-1   ,TTFCANB0 ,TTF2   ,39999,0       ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,1,160,3.5,-4095,4095,4095,2,20,1000,GUNDIPOLE       ,-0.2,DIPOLE ,TTMAG-B0B1
+###moved to smartcopsc crate### V14SMATCH  ,COPC-1   ,TTFCANB0 ,TTF2   ,32015,TCA-S   ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,3,48 ,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+###moved to smartcopsc crate### H1EXP      ,COPC-1   ,TTFCANB0 ,TTF2   ,32345,TCA-40  ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,3,64 ,3.5,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+###moved to smartcopsc crate### V1EXP      ,COPC-1   ,TTFCANB0 ,TTF2   ,32346,TCA-40  ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,3,80 ,3.5,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+###moved to smartcopsc crate### H3EXP      ,COPC-1   ,TTFCANB0 ,TTF2   ,32347,TCA-40  ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,3,96 ,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+###moved to smartcopsc crate### V3EXP      ,COPC-1   ,TTFCANB0 ,TTF2   ,32348,TCA-70  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,1,32 ,3.5,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+H10EXP     ,COPC-1   ,TTFCANB0 ,TTF2   ,32443,TCA-40  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,1,48 ,3.5,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+V10EXP     ,COPC-1   ,TTFCANB0 ,TTF2   ,32445,TCA-40  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,1,64 ,3.5,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+H1TCOL     ,COPC-1   ,TTFCANB0 ,TTF2   ,31436,TCA-40  ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,14    ,5           ,0       ,27,3,112,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+V1TCOL     ,COPC-1   ,TTFCANB0 ,TTF2   ,31438,TCA-40  ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,14    ,5           ,0       ,27,3,128,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+V2TCOL     ,COPC-1   ,TTFCANB0 ,TTF2   ,31455,TCA-40  ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,14    ,5           ,0       ,27,3,144,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+H2FL2EXTR  ,COPC-1   ,TTFCANB0 ,TTF2   ,41481,TCA-40  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,12    ,5           ,0       ,27,2,32 ,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+V3FL2EXTR  ,COPC-1   ,TTFCANB0 ,TTF2   ,41488,TCA-40  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,12    ,5           ,0       ,27,2,48 ,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+H5FL2EXTR  ,COPC-1   ,TTFCANB0 ,TTF2   ,41507,TCA-40  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,12    ,5           ,0       ,27,2,64 ,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+V9FL2EXTR  ,COPC-1   ,TTFCANB0 ,TTF2   ,41542,TCA-40  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,12    ,5           ,0       ,27,2,80 ,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+H10FL2EXTR ,COPC-1   ,TTFCANB0 ,TTF2   ,41554,TCA-40  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,12    ,5           ,0       ,27,2,96 ,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+H11FL2EXTR ,COPC-1   ,TTFCANB0 ,TTF2   ,41567,TCA-40  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,12    ,5           ,0       ,27,2,112,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+V11FL2EXTR ,COPC-1   ,TTFCANB0 ,TTF2   ,41569,TCA-40  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,12    ,5           ,0       ,27,2,128,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+V14FL2EXTR ,COPC-1   ,TTFCANB0 ,TTF2   ,41594,TCA-40  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,12    ,5           ,0       ,27,2,144,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+V19FL2EXTR ,COPC-1   ,TTFCANB0 ,TTF2   ,41642,TCA-40  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,4     ,5           ,0       ,27,2,160,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+H21FL2EXTR ,COPC-1   ,TTFCANB0 ,TTF2   ,41664,TCA-40  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,4     ,5           ,0       ,27,2,176,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+V21FL2EXTR ,COPC-1   ,TTFCANB0 ,TTF2   ,41667,TCA-70  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,4     ,5           ,0       ,27,1,96 ,3.5,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+H22FL2EXTR ,COPC-1   ,TTFCANB0 ,TTF2   ,41677,TCA-70  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,4     ,5           ,0       ,27,1,112,3.5,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+H16FL2EXTR ,COPC-1   ,TTFCANB0 ,TTF2   ,41616,TCA-70  ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,12    ,5           ,0       ,27,1,128,3.5,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+V6FLFEXTR  ,COPC-1   ,TTFCANB0 ,TTF2   ,40055,TCA-50-V,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,12    ,5           ,0       ,27,1,144,3.5,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+D10ORS     ,COPC-1   ,TTFCANB0 ,TTF2   ,31627,CV      ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,3,160,3.5,-4095,4095,4095,4,20,1000,TTFBIPD         ,0   ,DIPOLE ,TTMAG-B0B1
+D11ORS     ,COPC-1   ,TTFCANB0 ,TTF2   ,31628,CV      ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,3,176,3.5,-4095,4095,4095,4,20,1000,TTFBIPD         ,0   ,DIPOLE ,TTMAG-B0B1
+D12ORS     ,COPC-1   ,TTFCANB0 ,TTF2   ,31629,CV      ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,3,192,3.5,-4095,4095,4095,4,20,1000,TTFBIPD         ,0   ,DIPOLE ,TTMAG-B0B1
+H1ORS      ,COPC-1   ,TTFCANB0 ,TTF2   ,31600,CV      ,NONE  ,Anbau 2-9,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,1,176,3.5,-4095,4095,4095,4,20,1000,TTFBIPD         ,0   ,DIPOLE ,TTMAG-B0B1
+###moved to smartcopsc crate### V7SMATCH   ,COPC-1   ,TTFCANB0 ,TTF2   ,31945,TCA-S   ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,2,192,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+###moved to smartcopsc crate### H12SMATCH  ,COPC-1   ,TTFCANB0 ,TTF2   ,31013,TCA-S   ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,0       ,27,1,192,3.5,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER ,0   ,STEERER,TTMAG-B0B1
+#
+# Configuration for CAN Line B1 (former J), Socket CAN interface (type = 5) line socket can1, (can device 1)
+#
+CRATE12     ,NONE    ,TTFCANB1 ,TTF2   ,0,NONE    ,NONE  ,Anbau 2  ,CANSEDCRATE,NONE   ,can_sed-flash.eds    ,0     ,5           ,1       ,28,3,0  ,0   ,0    ,0   ,0   ,0,0 ,0   ,NONE           ,0   ,NONE   ,TTMAG-B0B1
+CRATE13     ,NONE    ,TTFCANB1 ,TTF2   ,0,NONE    ,NONE  ,Anbau 2  ,CANSEDCRATE,NONE   ,can_sed-flash.eds    ,0     ,5           ,1       ,28,2,0  ,0   ,0    ,0   ,0   ,0,0 ,0   ,NONE           ,0   ,NONE   ,TTMAG-B0B1
+CRATE14     ,NONE    ,TTFCANB1 ,TTF2   ,0,NONE    ,NONE  ,Anbau 2  ,CANSEDCRATE,NONE   ,can_sed-flash.eds    ,0     ,5           ,1       ,28,1,0  ,0   ,0    ,0   ,0   ,0,0 ,0   ,NONE           ,0   ,NONE   ,TTMAG-B0B1
+#
+U6P3EXP     ,COPC-1  ,TTFCANB1 ,TTF2   ,32403,none    ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,3,144,2   ,-4095,4095,4095,2,20,1000,FIRUND         ,0   ,STEERER,TTMAG-B0B1
+U6P12EXP    ,COPC-1  ,TTFCANB1 ,TTF2   ,32404,none    ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,3,160,2   ,-4095,4095,4095,2,20,1000,FIRUND         ,0   ,STEERER,TTMAG-B0B1
+H7ORS       ,COPC-1  ,TTFCANB1 ,TTF2   ,31650,TCA-40  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,3,192,3.5 ,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+V1DBC3      ,COPC-1  ,TTFCANB1 ,TTF2   ,30815,TCA-70  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,14    ,5           ,1       ,28,3,80 ,0.35,-4095,4095,4095,4,20,1000,TTFBIP_STEERER ,0   ,STEERER,TTMAG-B0B1
+H1DBC3      ,COPC-1  ,TTFCANB1 ,TTF2   ,30823,TCA-40  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,3,96 ,0.35,-4095,4095,4095,2,20,1000,TTFBIP_STEERER ,0   ,STEERER,TTMAG-B0B1
+H2UBC3      ,COPC-1  ,TTFCANB1 ,TTF2   ,30663,TCA-40  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,14    ,5           ,1       ,28,3,48 ,0.35,-4095,4095,4095,2,20,1000,TTFBIP_STEERER ,0   ,STEERER,TTMAG-B0B1
+V2UBC3      ,COPC-1  ,TTFCANB1 ,TTF2   ,30665,TCA-70  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,14    ,5           ,1       ,28,3,64 ,0.35,-4095,4095,4095,2,20,1000,TTFBIP_STEERER ,0   ,STEERER,TTMAG-B0B1
+H3DBC3      ,COPC-1  ,TTFCANB1 ,TTF2   ,30843,TCA-40  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,14    ,5           ,1       ,28,3,112,0.35,-4095,4095,4095,2,20,1000,TTFBIP_STEERER ,0   ,STEERER,TTMAG-B0B1
+V3DBC3      ,COPC-1  ,TTFCANB1 ,TTF2   ,30845,TCA-70  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,14    ,5           ,1       ,28,3,128,0.35,-4095,4095,4095,4,20,1000,TTFBIP_STEERER ,0   ,STEERER,TTMAG-B0B1
+V11DBC2     ,COPC-1  ,TTFCANB1 ,TTF2   ,30365,TCA-S   ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,14    ,5           ,1       ,28,3,32 ,3.5 ,-4095,4095,4095,2,20,1000,TTFBIP_STEERER ,0   ,STEERER,TTMAG-B0B1
+V1ORS       ,COPC-1  ,TTFCANB1 ,TTF2   ,31605,TCA-40  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,2,192,0.35,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+H5ORS       ,COPC-1  ,TTFCANB1 ,TTF2   ,31625,TCA-40  ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,1,48 ,3.5 ,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+D9ORS       ,COPC-1  ,TTFCANB1 ,TTF2   ,31623,CV      ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,1,32 ,3.5 ,-4095,4095,4095,4,20,1000,TTFBIPD        ,0   ,DIPOLE ,TTMAG-B0B1
+H10ORS      ,COPC-1  ,TTFCANB1 ,TTF2   ,31653,TCA-40  ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,1,64 ,0.35,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+V10ORS      ,COPC-1  ,TTFCANB1 ,TTF2   ,31763,TCA-40  ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,1,96 ,3.5 ,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+V11ORS      ,COPC-1  ,TTFCANB1 ,TTF2   ,31765,TCA-40  ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,1,112,3.5 ,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+V4SFELC     ,COPC-1  ,TTFCANB1 ,TTF2   ,31876,TCA-40  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,2,32 ,3.5 ,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+V6SFELC     ,COPC-1  ,TTFCANB1 ,TTF2   ,31877,TCA-40  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,2,176,3.5 ,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+H4SFELC     ,COPC-1  ,TTFCANB1 ,TTF2   ,31843,TCA-40  ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,1,128,3.5 ,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+H3SFELC     ,COPC-1  ,TTFCANB1 ,TTF2   ,31855,TCA-40  ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,1,144,0.35,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+V2SFELC     ,COPC-1  ,TTFCANB1 ,TTF2   ,31815,TCA-40  ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,1,192,3.5 ,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+H2ECOL      ,COPC-1  ,TTFCANB1 ,TTF2   ,31543,TCA-50  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,2,112,0.35,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+H4ECOL      ,COPC-1  ,TTFCANB1 ,TTF2   ,31563,TCA-50  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,2,128,0.35,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+V4ECOL      ,COPC-1  ,TTFCANB1 ,TTF2   ,31565,TCA-50  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,2,144,0.35,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+H6ECOL      ,COPC-1  ,TTFCANB1 ,TTF2   ,31583,TCA-50  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,2,160,0.35,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+H4TCOL      ,COPC-1  ,TTFCANB1 ,TTF2   ,31483,TCA-40  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,2,48 ,3.5 ,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+V4TCOL      ,COPC-1  ,TTFCANB1 ,TTF2   ,31475,TCA-40  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,2,64 ,3.5 ,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+H8TCOL      ,COPC-1  ,TTFCANB1 ,TTF2   ,31513,TCA-40  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,2,80 ,3.5 ,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+V8TCOL      ,COPC-1  ,TTFCANB1 ,TTF2   ,31515,TCA-40  ,NONE  ,Anbau 2-7,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,2,96 ,3.5 ,-4095,4095,4095,4,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
+###moved to smartcopsc crate### H10SMATCH   ,COPC-1  ,TTFCANB1 ,TTF2   ,31943,TCA-S   ,NONE  ,Anbau 2-8,CANSEDPSC1 ,COPC-1 ,none             ,2     ,5           ,1       ,28,1,160,3.5 ,-4095,4095,4095,2,20,1000,TTFBIPD_STEERER,0   ,STEERER,TTMAG-B0B1
