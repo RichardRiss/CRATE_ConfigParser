@@ -14,7 +14,7 @@ import yaml
 class yamlHandler:
     def __init__(self):
         if getattr(sys, 'frozen', False):
-            self.src_folder = sys._MEIPASS
+            self.src_folder = os.path.dirname(sys.executable)
         else:
             self.src_folder = os.path.dirname(os.path.abspath(__file__))
         self.src_path = self.src_folder + "\config.yaml"
@@ -230,7 +230,7 @@ def init_logging():
     log_format = f"%(asctime)s [%(processName)s] [%(name)s] [%(levelname)s] %(message)s"
     log_level = logging.DEBUG
     if getattr(sys, 'frozen', False):
-        folder = sys._MEIPASS
+        folder = os.path.dirname(sys.executable)
     else:
         folder = os.path.dirname(os.path.abspath(__file__))
     # noinspection PyArgumentList
