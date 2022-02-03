@@ -1,6 +1,10 @@
 #!/usr/bin/python3
 
-import sys,os,re,time
+# TODO: Comments in yaml
+#       SSH Send/Overwrite
+
+
+import sys,os,time
 import logging,csv
 import PySimpleGUI as sg
 import pandas as pd
@@ -10,6 +14,7 @@ import yaml
 class yamlHandler:
     def __init__(self):
         self.src_path = os.path.split((os.path.realpath(__file__)))[0] + "\config.yaml"
+        self.prim_setup()
 
     def prim_setup(self):
         try:
@@ -29,17 +34,28 @@ class yamlHandler:
 
     def setup(self):
         # Type Dataframe
-        self.type = [(1,0,0,0),
+        self.data = {
+            # Type Lookup Table
+            'type' : [(1,0,0,0),
                      (2,0,0,0),
                      (3,0,0,0),
                      (4,5,7,0),
                      (0,6,0,0),
                      (0,0,0,8),
                      (0,0,0,9),
-                     (0,0,0,10)]
-        self.col = ['COPC-1','COPC-2','COPC-4','COPC-6']
-        self.index = ['3.5','2','0.35','10','13.5','20','15','30']
-        self._type = pd.DataFrame(self.type, columns=self.col, index=self.index)
+                     (0,0,0,10)],
+            'type_name' : ['COPC-1','COPC-2','COPC-4','COPC-6'],
+            'type_DCCT' : ['3.5','2','0.35','10','13.5','20','15','30'],
+            # Server Lookup Table
+            'server': [('flashcpumag-b','flashcpumag-c','flashcpumag-d'),
+                       ('flashcpumag-e','flashcpumag-f','flashcpumag-g')],
+            'server_node' : ['1','2','3'],
+            'server_line' : ['27','28']
+            # Add SUBADDR?
+        }
+        with open(self.src_path,'w',encoding='utf8') as f:
+            yaml.safe_dump(self.data,f)
+        f.close()
 
 
     def read(self, key):
@@ -72,10 +88,12 @@ class yamlHandler:
             logging.error(f'Error on line {sys.exc_info()[-1].tb_lineno}')
 
 
+
 class Reader:
-    _input=_target=_type=_server=_slot= None
+    _input=_target=_yaml=_type=_server=_slot=None
     _filter = ['#']     #append filter options
     _storage = []
+    _filedict = {}
 
     def __init__(self,*args):
         for arg in args:
@@ -83,31 +101,34 @@ class Reader:
                 self._input = arg['input']
             if 'target' in arg:
                 self._target = arg['target']
+
+        self._yaml = yamlHandler()
         self.create_df()
 
+
     def create_df(self):
-        # Type Dataframe
-        self.type = [(1,0,0,0),
-                     (2,0,0,0),
-                     (3,0,0,0),
-                     (4,5,7,0),
-                     (0,6,0,0),
-                     (0,0,0,8),
-                     (0,0,0,9),
-                     (0,0,0,10)]
-        self.col = ['COPC-1','COPC-2','COPC-4','COPC-6']
-        self.index = ['3.5','2','0.35','10','13.5','20','15','30']
-        self._type = pd.DataFrame(self.type,columns = self.col,index = self.index)
+        try:
+            # Type Dataframe
+            self.data = self._yaml.read('type')
+            self.colname = self._yaml.read('type_name')
+            self.index = self._yaml.read('type_DCCT')
+            self._type = pd.DataFrame(self.data,columns = self.colname,index = self.index)
 
-        # Server Dataframe
-        self.server = [('flashcpumag-b','flashcpumag-c','flashcpumag-d'),
-                       ('flashcpumag-e','flashcpumag-f','flashcpumag-g')]
-        self.col = ['1','2','3']
-        self.index = ['27','28']
-        self._server = pd.DataFrame(self.server,columns=self.col,index=self.index)
+            # Server Dataframe
+            self.data = self._yaml.read('server')
+            self.colname = self._yaml.read('server_node')
+            self.index = self._yaml.read('server_line')
+            self._server= pd.DataFrame(self.data, columns=self.colname, index=self.index)
 
-        # Slot Func
-        self._slot = lambda x: int((int(x) -32)/16)
+            # Slot Func
+            self._slot = lambda x: int((int(x) -32)/16)
+
+        except:
+            logging.error(f'Creation of Lookup matrix failed.')
+            logging.error(f'{sys.exc_info()[1]}')
+            logging.error(f'Error on line {sys.exc_info()[-1].tb_lineno}')
+
+
 
     def create(self):
         try:
@@ -135,22 +156,47 @@ class Reader:
                 conf_str = ''
                 if dcct in self._type.index.values and subtype in self._type.columns.values:
                     conf_str += f'MgntName = "{config["NODENAME"]}";\n'
-                    conf_str += f'MngtCntrlType = "{self._type.at[dcct,subtype]}";\n'
-                    conf_str += f'PSName = "{config["NODENAME"]}";\n'
-                    conf_str += f'PsCircuitName = "{config["KREISNUM"]}"\n'
+                    conf_str += f'MgntCntrlType = {self._type.at[dcct,subtype]};\n'
+                    conf_str += f'PsName = "{config["NODENAME"]}";\n'
+                    conf_str += f'PsCircuitName = {config["KREISNUM"]}\n'
+                    folder = os.path.join(self._target,self._server.at[config["LINENUM"],config["NODEID"]])
+                    filename = os.path.join(folder,f'SLOT{self._slot(config["SUBADDR"])}.cfg')
+                    self._filedict[filename] = conf_str
 
-                    print(f'slot {self._slot(config["SUBADDR"])}')
-                    print(f'server {self._server.at[config["LINENUM"],config["NODEID"]]}')
-
+            if len(self._filedict) > 0:
+                self.writearea(self._filedict)
+            else:
+                logging.error(f'No valid Config Data in {self._input}')
 
         except:
-            logging.error(f'Unable to launch Program')
             logging.error(f'{sys.exc_info()[1]}')
             logging.error(f'Error on line {sys.exc_info()[-1].tb_lineno}')
 
 
+    def writearea(self,data : dict):
+        key = ''
+        try:
+            for key in data:
 
-def gui_selection():
+                # create folder struct
+                __dir = os.path.dirname(key)
+                if not os.path.exists(__dir):
+                    os.makedirs(__dir)
+
+                # Write file if it doesn't already exist
+                if os.path.isfile(key):
+                    logging.error(f'file {key} already exists ')
+                else:
+                    with open(key, 'w') as file:
+                        file.write(data[key])
+
+        except:
+            logging.error(f'Error writing file {key} to target')
+            logging.error(f'{sys.exc_info()[1]}')
+            logging.error(f'Error on line {sys.exc_info()[-1].tb_lineno}')
+
+
+def simplegui():
     sg.theme('Reddit')
     layout = []
     layout.append([sg.Text('Input File')])
@@ -186,7 +232,7 @@ def init_logging():
 def main():
     try:
         init_logging()
-        rd = Reader(gui_selection())
+        rd = Reader(simplegui())
         rd.create()
 
     except:
