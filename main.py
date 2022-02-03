@@ -137,6 +137,9 @@ class Reader:
 
             # Filter self._filter
             with open(self._input) as csvfile:
+                while any(match in csvfile.readline() for match in self._filter):
+                    offset = csvfile.tell()
+                csvfile.seek(offset)
                 self.reader = csv.DictReader(csvfile)
 
                 for csvdict in self.reader:
@@ -168,7 +171,12 @@ class Reader:
             else:
                 logging.error(f'No valid Config Data in {self._input}')
 
+        except KeyError:
+            logging.error(f'Invalid key used for lookup. Make sure {sys.exc_info()[1]} is in Config File.')
+            logging.error(f'Error on line {sys.exc_info()[-1].tb_lineno}')
+
         except:
+            logging.error(f'error creating internal lookup matrix. please check if the config values are valid')
             logging.error(f'{sys.exc_info()[1]}')
             logging.error(f'Error on line {sys.exc_info()[-1].tb_lineno}')
 
