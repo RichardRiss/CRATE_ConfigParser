@@ -13,7 +13,11 @@ import yaml
 
 class yamlHandler:
     def __init__(self):
-        self.src_path = os.path.split((os.path.realpath(__file__)))[0] + "\config.yaml"
+        if getattr(sys, 'frozen', False):
+            self.src_folder = sys._MEIPASS
+        else:
+            self.src_folder = os.path.dirname(os.path.abspath(__file__))
+        self.src_path = self.src_folder + "\config.yaml"
         self.prim_setup()
 
     def prim_setup(self):
@@ -33,17 +37,16 @@ class yamlHandler:
 
 
     def setup(self):
-        # Type Dataframe
         self.data = {
             # Type Lookup Table
-            'type' : [(1,0,0,0),
-                     (2,0,0,0),
-                     (3,0,0,0),
-                     (4,5,7,0),
-                     (0,6,0,0),
-                     (0,0,0,8),
-                     (0,0,0,9),
-                     (0,0,0,10)],
+            'type' : [[1,0,0,0],
+                     [2,0,0,0],
+                     [3,0,0,0],
+                     [4,5,7,0],
+                     [0,6,0,0],
+                     [0,0,0,8],
+                     [0,0,0,9],
+                     [0,0,0,10]],
             'type_name' : ['COPC-1','COPC-2','COPC-4','COPC-6'],
             'type_DCCT' : ['3.5','2','0.35','10','13.5','20','15','30'],
             # Server Lookup Table
@@ -54,7 +57,7 @@ class yamlHandler:
             # Add SUBADDR?
         }
         with open(self.src_path,'w',encoding='utf8') as f:
-            yaml.safe_dump(self.data,f)
+            yaml.safe_dump(self.data, f)
         f.close()
 
 
@@ -94,6 +97,7 @@ class Reader:
     _filter = ['#']     #append filter options
     _storage = []
     _filedict = {}
+    _offset = 0
 
     def __init__(self,*args):
         for arg in args:
@@ -138,8 +142,8 @@ class Reader:
             # Filter self._filter
             with open(self._input) as csvfile:
                 while any(match in csvfile.readline() for match in self._filter):
-                    offset = csvfile.tell()
-                csvfile.seek(offset)
+                    self._offset = csvfile.tell()
+                csvfile.seek(self._offset)
                 self.reader = csv.DictReader(csvfile)
 
                 for csvdict in self.reader:
@@ -225,13 +229,17 @@ def simplegui():
 def init_logging():
     log_format = f"%(asctime)s [%(processName)s] [%(name)s] [%(levelname)s] %(message)s"
     log_level = logging.DEBUG
+    if getattr(sys, 'frozen', False):
+        folder = sys._MEIPASS
+    else:
+        folder = os.path.dirname(os.path.abspath(__file__))
     # noinspection PyArgumentList
     logging.basicConfig(
         format=log_format,
         level=log_level,
         force=True,
         handlers=[
-            logging.FileHandler(filename=f'{os.path.dirname(__file__)}\\debug.log', mode='w', encoding='utf-8'),
+            logging.FileHandler(filename=f'{folder}\\debug.log', mode='w', encoding='utf-8'),
             logging.StreamHandler(sys.stdout)
 
         ]
