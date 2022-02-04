@@ -9,6 +9,7 @@ import logging,csv
 import PySimpleGUI as sg
 import pandas as pd
 import yaml
+import paramiko
 
 
 class yamlHandler:
@@ -208,25 +209,70 @@ class Reader:
             logging.error(f'{sys.exc_info()[1]}')
             logging.error(f'Error on line {sys.exc_info()[-1].tb_lineno}')
 
+
+def errormsg():
+    layout = [[sg.Text('Invalid Connection Parameters')],
+              [sg.Button('Check'), sg.Button('Exit')]]
+    window = sg.Window('Checker', layout)
+    events, values = window.read()
+
+
 def sshgui():
     try:
         sg.theme('Reddit')
+        folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/' \
+                      b'9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8' \
+                      b'WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNv' \
+                      b'IAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIW' \
+                      b'Hhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfz' \
+                      b'pKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrj' \
+                      b'oiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChB' \
+                      b'OoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQO' \
+                      b'AOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJ' \
+                      b'SDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUC' \
+                      b'I8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnw' \
+                      b'qnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
+
+        treedata = sg.TreeData()
+        treedata.Insert('', 0, '.', [], icon=folder_icon)
+        tree = sg.Tree(treedata , headings=[], col0_width=80, num_rows=10, show_expanded=True, enable_events=True, key='-TREE-')
+        tree.bind('<Button-1>', "CLICK")
+        tree.bind('<Double-1>', "DOUBLE")
+        _server = _port = _user = _pw = None
         layout = []
         layout.append([sg.Text('Server:'),sg.Input(key='server')])
         layout.append([sg.Text('Port:'), sg.Input(key='port',default_text="22")])
         layout.append([sg.Text('User:'), sg.Input(key='user')])
         layout.append([sg.Text('Password:'), sg.Input(key='password', password_char='*')])
-        layout.append([sg.Button('Approve'), sg.Button('Test Connection'), sg.Cancel()])
-        treedata = sg.TreeData()
-        folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
-        treedata.Insert('', 0, 'root', [],icon = folder_icon)
-        layout.append([sg.Tree(treedata)])
+        layout.append([sg.Button('Connect'), sg.Cancel()])
+        layout.append([tree])
         window = sg.Window('Remote Connection', layout)
         while True:
             event, values = window.read()
 
             if event == sg.WIN_CLOSED or event == 'Cancel':
-                window.close()
+                break
+            elif event == 'Connect':
+                _server = values['server']
+                _port = values['port']
+                _user = values['user']
+                _pw = values['password']
+                # build a transport
+                transport = paramiko.Transport((_server,_port))
+                #Connect
+                transport.connect(None,_user,_pw)
+                #build client
+                sftp = paramiko.SFTPClient.from_transport(transport)
+                list_dirs = sftp.listdir('.')
+            elif event == '-TREE-CLICK':
+                pass
+            elif event == '-TREE-DOUBLE':
+                pass
+
+        window.close()
+
+    except paramiko.SSHException:
+        errormsg()
 
 
     except:
