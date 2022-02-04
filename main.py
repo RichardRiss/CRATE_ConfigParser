@@ -267,6 +267,7 @@ def sshgui():
             elif event == '-TREE-CLICK':
                 pass
             elif event == '-TREE-DOUBLE':
+                parrent = values['-TREE-'][0]
                 pass
 
         window.close()
