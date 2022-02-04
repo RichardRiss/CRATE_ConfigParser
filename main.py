@@ -23,10 +23,11 @@ class yamlHandler:
     def prim_setup(self):
         try:
             if os.path.exists(self.src_path):
+                return
                 # Only allow Config changed if program is in frozen state (exe)
-                if not getattr(sys, 'frozen', False):
-                    os.remove(self.src_path)
-                    self.setup()
+                #if not getattr(sys, 'frozen', False):
+                    #os.remove(self.src_path)
+                    #self.setup()
             else:
                 self.setup()
 
@@ -207,23 +208,58 @@ class Reader:
             logging.error(f'{sys.exc_info()[1]}')
             logging.error(f'Error on line {sys.exc_info()[-1].tb_lineno}')
 
+def sshgui():
+    try:
+        sg.theme('Reddit')
+        layout = []
+        layout.append([sg.Text('Server:'),sg.Input(key='server')])
+        layout.append([sg.Text('Port:'), sg.Input(key='port',default_text="22")])
+        layout.append([sg.Text('User:'), sg.Input(key='user')])
+        layout.append([sg.Text('Password:'), sg.Input(key='password', password_char='*')])
+        layout.append([sg.Button('Approve'), sg.Button('Test Connection'), sg.Cancel()])
+        treedata = sg.TreeData()
+        folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8Tngzg349q7t5xcfzpKGhOFHnjx+9qLTzW8wsmFTL2Gzk7Y2O/k9kCbtwUZbV+Zvo8Md3PALrjoiqsKSR9ljpAJpwOsNtlfXfRvoNU8Arr/NsVo0ry5z4dZN5hoGqEzYDChBOoKwS/vSq0XW3y5NAI/uN1cvLqzQur4MCpBGEEd1PQDfQ74HYR+LfeQOAOYAmgAmbly+dgfid5CHPIKqC74L8RDyGPIYy7+QQjFWa7ICsQ8SpB/IfcJSDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUCI8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnwqnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
+        treedata.Insert('', 0, 'root', [],icon = folder_icon)
+        layout.append([sg.Tree(treedata)])
+        window = sg.Window('Remote Connection', layout)
+        while True:
+            event, values = window.read()
+
+            if event == sg.WIN_CLOSED or event == 'Cancel':
+                window.close()
+
+
+    except:
+        logging.error(f'SSH GUI produced an error.')
+        logging.error(f'{sys.exc_info()[1]}')
+        logging.error(f'Error on line {sys.exc_info()[-1].tb_lineno}')
+
+
 
 def simplegui():
-    sg.theme('Reddit')
-    layout = []
-    layout.append([sg.Text('Input File')])
-    layout.append([sg.Input(key = 'input'), sg.FileBrowse(file_types=(('CRATE Config Files', '*.csv'),))])
-    layout.append([sg.Text('Export Folder')])
-    layout.append([sg.Input(key = 'target'), sg.FolderBrowse()])
-    layout.append([[sg.Ok("Create"), sg.Cancel()]])
-    window = sg.Window('ConfigParser', layout)
-    event,values = window.read()
+    try:
+        sg.theme('Reddit')
+        layout = []
+        layout.append([sg.Text('Input File')])
+        layout.append([sg.Input(key = 'input'), sg.FileBrowse(file_types=(('CRATE Config Files', '*.csv'),))])
+        layout.append([sg.Text('Export Folder')])
+        layout.append([sg.Input(key = 'target'), sg.FolderBrowse(button_text= ' Local Folder'), sg.Button(button_text = 'Remote Folder', key= 'sftp')])
+        layout.append([[sg.Ok("Create"), sg.Cancel()]])
+        window = sg.Window('ConfigParser', layout)
+        while True:
+            event,values = window.read()
 
-    if event == sg.WIN_CLOSED or event == 'Cancel':
-        window.close()
-        sys.exit(1996)
-    elif event == 'Create':
-        return values
+            if event == sg.WIN_CLOSED or event == 'Cancel':
+                window.close()
+                sys.exit('Program aborted manually')
+            elif event == 'sftp':
+                sshgui()
+            elif event == 'Create':
+                return values
+    except:
+        logging.error(f'Main GUI produced an error.')
+        logging.error(f'{sys.exc_info()[1]}')
+        logging.error(f'Error on line {sys.exc_info()[-1].tb_lineno}')
 
 
 def init_logging():
