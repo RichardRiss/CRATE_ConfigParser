@@ -10,6 +10,7 @@ import PySimpleGUI as sg
 import pandas as pd
 import yaml
 import paramiko
+from stat import S_ISDIR
 
 
 class yamlHandler:
@@ -95,18 +96,26 @@ class yamlHandler:
 
 
 class Reader:
-    _input=_target=_yaml=_type=_server=_slot=None
+    _input=_target=_yaml=_type=_server=_slot=_ssh=_sftp=None
     _filter = ['#']     #append filter options
     _storage = []
     _filedict = {}
     _offset = 0
+    _state = 'local'
 
-    def __init__(self,*args):
+    def __init__(self, *args):
         for arg in args:
             if 'input' in arg:
                 self._input = arg['input']
             if 'target' in arg:
                 self._target = arg['target']
+            if 'state' in arg:
+                self._state = arg['state']
+            if 'ssh' in arg:
+                self._ssh:paramiko.SSHClient = arg['ssh']
+            if 'sftp' in arg:
+                self._sftp:paramiko.SFTPClient = arg['sftp']
+
 
         self._yaml = yamlHandler()
         self.create_df()
@@ -152,16 +161,16 @@ class Reader:
                     if all(match not in value for value in csvdict.values() for match in self._filter):
                         self._storage.append({key.replace(' ','') : value.replace(' ','') for key,value in csvdict.items()})
 
-
+            ########### General Struct ##############
             # MgntName = "NODENAME"; -> dict Nodename
             # MngtCntrlType = 1;  -> dict DCCT,Subtype
             # PSName = "NODENAME"; -> dict Nodename
             # PsCircuitName = 32443; -> dict Kreisnum
+            #########################################
 
             for config in self._storage:
                 dcct = config["DCCT"]
                 subtype = config["SUBTYPE"]
-                #filename =
                 conf_str = ''
                 if dcct in self._type.index.values and subtype in self._type.columns.values:
                     conf_str += f'MgntName = "{config["NODENAME"]}";\n'
@@ -186,23 +195,48 @@ class Reader:
             logging.error(f'{sys.exc_info()[1]}')
             logging.error(f'Error on line {sys.exc_info()[-1].tb_lineno}')
 
+        finally:
+            return {self._target: len(self._filedict)}
+
 
     def writearea(self,data : dict):
         key = ''
         try:
             for key in data:
-
                 # create folder struct
                 __dir = os.path.dirname(key)
-                if not os.path.exists(__dir):
-                    os.makedirs(__dir)
+                if self._state == 'ssh':
+                    ##########
+                    # SSH Path
+                    ##########
+                    # Create folder if it doesn't already exist
+                    try:
+                        self._sftp.stat(__dir)
+                    except:
+                        self._sftp.mkdir(__dir)
 
-                # Write file if it doesn't already exist
-                if os.path.isfile(key):
-                    logging.error(f'file {key} already exists ')
+                    # Write file if it doesn't already exist
+                    try:
+                        with self._sftp.open(key,'wx') as f:
+                            f.write(data[key])
+                    except:
+                        logging.error(f'Error file {key} already exists or is permission is insufficient.')
+
                 else:
-                    with open(key, 'w') as file:
-                        file.write(data[key])
+                    #################
+                    # local File Path
+                    #################
+                    # Create folder if it doesn't already exist
+                    if not os.path.exists(__dir):
+                        os.makedirs(__dir)
+
+                    # Write file if it doesn't already exist
+                    if os.path.isfile(key):
+                        logging.error(f'file {key} already exists ')
+                    else:
+                        with open(key, 'w') as file:
+                            file.write(data[key])
+
 
         except:
             logging.error(f'Error writing file {key} to target')
@@ -210,16 +244,36 @@ class Reader:
             logging.error(f'Error on line {sys.exc_info()[-1].tb_lineno}')
 
 
+        finally:
+            if self._sftp is not None:
+                self._sftp.close()
+
 def errormsg():
     layout = [[sg.Text('Invalid Connection Parameters')],
-              [sg.Button('Check'), sg.Button('Exit')]]
-    window = sg.Window('Checker', layout)
+              [sg.Button('OK')]]
+    window = sg.Window('Error', layout)
     events, values = window.read()
+    if events == sg.WIN_CLOSED or events == 'OK':
+        window.close()
+        return
+
+def compl_message(dict_result):
+    for key in dict_result:
+        path = key
+        length = dict_result[key]
+        layout = [[sg.Text(f'{length} files successfully written to {path}.')],
+                  [sg.Button('OK')]]
+        window = sg.Window('Finished', layout)
+        events, values = window.read(timeout=10000)
+        window.close()
+    return
 
 
 def sshgui():
     try:
         sg.theme('Reddit')
+        _server = _port = _user = _pw = None
+        _connected = False
         folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/' \
                       b'9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8' \
                       b'WSv2rUQRSFv7vZgJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNv' \
@@ -232,13 +286,12 @@ def sshgui():
                       b'SDVMAJUwJkYDMNOEPIBxA/gnuMyYPijXAI3lMse7FGnIKsIuqrxgRSeXOoYZUC' \
                       b'I8pIKW/OHA7kD2YYcpAKgM5ABXk4qSsdJaDOMCsgTIYAlL5TQFTyUIZDmev0N/bnw' \
                       b'qnylEBQS45UKnHx/lUlFvA3fo+jwR8ALb47/oNma38cuqiJ9AAAAAASUVORK5CYII='
+        warning = 'Attention this Client has an Autoadd Policy for SSH Server Keys!'
 
         treedata = sg.TreeData()
-        treedata.Insert('', 0, '.', [], icon=folder_icon)
-        tree = sg.Tree(treedata , headings=[], col0_width=80, num_rows=10, show_expanded=True, enable_events=True, key='-TREE-')
-        tree.bind('<Button-1>', "CLICK")
-        tree.bind('<Double-1>', "DOUBLE")
-        _server = _port = _user = _pw = None
+        treedata.Insert('', '.', '.', [], icon=folder_icon)
+        tree = sg.Tree(treedata, headings=[], col0_width=80, num_rows=10, show_expanded=True, enable_events=True, key='-TREE-')
+
         layout = []
         layout.append([sg.Text('Server:'),sg.Input(key='server')])
         layout.append([sg.Text('Port:'), sg.Input(key='port',default_text="22")])
@@ -246,31 +299,55 @@ def sshgui():
         layout.append([sg.Text('Password:'), sg.Input(key='password', password_char='*')])
         layout.append([sg.Button('Connect'), sg.Cancel()])
         layout.append([tree])
+        layout.append([sg.Button('Select Folder',key='select'),sg.Text(warning,text_color='red')])
         window = sg.Window('Remote Connection', layout)
         while True:
             event, values = window.read()
-
+            if not ('<Double-1>' in tree.user_bind_dict.keys()):
+                tree.bind('<Double-1>', "DOUBLE")
             if event == sg.WIN_CLOSED or event == 'Cancel':
                 break
             elif event == 'Connect':
-                _server = values['server']
-                _port = values['port']
+                _server = values['server'].strip()
+                _port = int(values['port'])
                 _user = values['user']
                 _pw = values['password']
                 # build a transport
-                transport = paramiko.Transport((_server,_port))
-                #Connect
-                transport.connect(None,_user,_pw)
-                #build client
-                sftp = paramiko.SFTPClient.from_transport(transport)
-                list_dirs = sftp.listdir('.')
-            elif event == '-TREE-CLICK':
-                pass
-            elif event == '-TREE-DOUBLE':
-                parrent = values['-TREE-'][0]
-                pass
+                ssh = paramiko.SSHClient()
+                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                # Connect
+                try:
+                    ssh.connect(_server, _port, _user, _pw, timeout=2.0)
+                    # get transport layer
+                    transport = ssh.get_transport()
+                    # build client
+                    sftp = paramiko.SFTPClient.from_transport(transport)
+                    list_dirs = [el.filename for el in sftp.listdir_attr('.') if S_ISDIR(el.st_mode)]
+                    for dir in list_dirs:
+                        parent_key = treedata.tree_dict['.'].key
+                        key = os.path.join(parent_key, dir)
+                        treedata.insert(parent_key, key, str(dir), [], folder_icon)
+                    tree.update(values=treedata)
+                    _connected = True
+                except:
+                    errormsg()
+
+            elif event == '-TREE-DOUBLE' and _connected and len(values['-TREE-']) > 0 :
+                selected_key = values['-TREE-'][0]
+                list_dirs = [el.filename for el in sftp.listdir_attr(selected_key) if S_ISDIR(el.st_mode)]
+                treedata.tree_dict[selected_key].children.clear()
+                for dir in list_dirs:
+                    key = os.path.join(selected_key, dir)
+                    treedata.insert(selected_key, key, str(dir), [], folder_icon)
+                tree.update(values=treedata)
+
+            elif event == 'select' and _connected and len(values['-TREE-']) > 0:
+                selected_key = values['-TREE-'][0]
+                window.close()
+                return {'ssh':ssh, 'sftp':sftp, 'key':selected_key}
 
         window.close()
+
 
     except paramiko.SSHException:
         errormsg()
@@ -286,22 +363,33 @@ def sshgui():
 def simplegui():
     try:
         sg.theme('Reddit')
+        dict_ssh = dict_state = {}
         layout = []
         layout.append([sg.Text('Input File')])
-        layout.append([sg.Input(key = 'input'), sg.FileBrowse(file_types=(('CRATE Config Files', '*.csv'),))])
+        layout.append([sg.Input(key='input'), sg.FileBrowse(file_types=(('CRATE Config Files', '*.csv'),))])
+        layout.append([sg.Input(key='dummy',visible=False, enable_events=True)])
         layout.append([sg.Text('Export Folder')])
-        layout.append([sg.Input(key = 'target'), sg.FolderBrowse(button_text= ' Local Folder'), sg.Button(button_text = 'Remote Folder', key= 'sftp')])
+        layout.append([sg.Input(key='target'), sg.FolderBrowse(target='dummy', button_text=' Local Folder'),
+                       sg.Button(button_text='Remote Folder', key='ssh')])
         layout.append([[sg.Ok("Create"), sg.Cancel()]])
         window = sg.Window('ConfigParser', layout)
         while True:
-            event,values = window.read()
+            event, values = window.read()
 
             if event == sg.WIN_CLOSED or event == 'Cancel':
                 window.close()
                 sys.exit('Program aborted manually')
-            elif event == 'sftp':
-                sshgui()
+            elif event == 'dummy':
+                dict_state['state'] = 'local'
+                window['target'].update(value=window['dummy'].get())
+            elif event == 'ssh':
+                dict_ssh = sshgui()
+                dict_state['state'] = 'ssh'
+                window['target'].update(value=dict_ssh['key'])
             elif event == 'Create':
+                values.update(dict_ssh)
+                values.update(dict_state)
+                window.close()
                 return values
     except:
         logging.error(f'Main GUI produced an error.')
@@ -332,7 +420,7 @@ def main():
     try:
         init_logging()
         rd = Reader(simplegui())
-        rd.create()
+        compl_message(rd.create())
 
     except:
         logging.error(f'Unable to launch Program')
