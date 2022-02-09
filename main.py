@@ -176,7 +176,7 @@ class Reader:
                     conf_str += f'MgntName = "{config["NODENAME"]}";\n'
                     conf_str += f'MgntCntrlType = {self._type.at[dcct,subtype]};\n'
                     conf_str += f'PsName = "{config["NODENAME"]}";\n'
-                    conf_str += f'PsCircuitName = {config["KREISNUM"]}\n'
+                    conf_str += f'PsCircuitNumber = {config["KREISNUM"]};\n'
                     folder = os.path.join(self._target,self._server.at[config["LINENUM"],config["NODEID"]])
                     filename = os.path.join(folder,f'SLOT{self._slot(config["SUBADDR"])}.cfg')
                     self._filedict[filename] = conf_str
