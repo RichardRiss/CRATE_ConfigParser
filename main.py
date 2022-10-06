@@ -4,8 +4,8 @@
 #       SSH Send/Overwrite
 
 
-import sys,os,time
-import logging,csv
+import sys, os, time
+import logging, csv
 import PySimpleGUI as sg
 import pandas as pd
 import yaml
@@ -170,7 +170,7 @@ class Reader:
 
             for config in self._storage:
                 dcct = config["DCCT"]
-                subtype = config["SUBTYPE"]
+                subtype = config["PSNAME"]
                 conf_str = ''
                 if dcct in self._type.index.values and subtype in self._type.columns.values:
                     conf_str += f'MgntName = "{config["NODENAME"]}";\n'
